@@ -104,6 +104,10 @@ class SimonGame:
             Button(110, 270, DARKRED),      # Bottom left button
             Button(330, 270, DARKGREEN),    # Bottom right button
         ]
+    
+
+    def empty_high_score_file(self):
+        open('high_scores.txt', 'w').close()
 
     def get_high_score(self):
         # Read the high score from a file
@@ -250,7 +254,7 @@ class SimonGame:
 
     def game_over_animation(self):
         """
-        Display a game over animation with a flashing white screen.
+        Display a game over screen with "Game Over" text and a restart button.
         """
 
         # Create a copy of the screen to restore it after the animation
@@ -267,23 +271,37 @@ class SimonGame:
         # Set the initial color to white
         r, g, b = WHITE
 
-        # Repeat the animation three times for a more noticeable effect
-        for _ in range(3):
-            # Iterate through alpha values for the flashing effect
-            for start, end, step in ((0, 255, 1), (255, 0, -1)):
-                for alpha in range(start, end, ANIMATION_SPEED * step):
-                    # Update the screen with the original surface
-                    self.screen.blit(original_surface, (0, 0))
+        # Display "Game Over" text
+        font = pygame.font.Font(None, 36)
+        text = font.render("Game Over", True, WHITE)
+        text_rect = text.get_rect(center=(self.screen.get_width() // 2, self.screen.get_height() // 2))
+        self.screen.blit(original_surface, (0, 0))
+        self.screen.blit(text, text_rect)
+        pygame.display.update()
 
-                    # Fill the flash surface with the specified color and alpha value
-                    flash_surface.fill((r, g, b, alpha))
+        # Display restart button
+        restart_button = pygame.Rect(self.screen.get_width() // 2 - 50, text_rect.bottom + 20, 100, 40)
+        pygame.draw.rect(self.screen, WHITE, restart_button)
+        restart_text = font.render("Restart", True, BLACK)
+        restart_text_rect = restart_text.get_rect(center=restart_button.center)
+        self.screen.blit(restart_text, restart_text_rect)
+        pygame.display.update()
 
-                    # Blit the flash surface onto the screen at position (0, 0)
-                    self.screen.blit(flash_surface, (0, 0))
+        restart_button_clicked = False
 
-                    # Update the display and control the frame rate
-                    pygame.display.update()
-                    self.clock.tick(FPS)
+        while not restart_button_clicked:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit(0)
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if restart_button.collidepoint(mouse_pos):
+                        restart_button_clicked = True
+
+            # Update the display and control the frame rate
+            pygame.display.update()
+            self.clock.tick(FPS)
 
         # Restore the original surface after the animation
         self.screen.blit(original_surface, (0, 0))

@@ -14,6 +14,9 @@ def test_button_clicked():
 
 def test_game_initialization():
     game = Game()
+    
+    game.empty_high_score_file() # Prepares text file for testing.
+
     assert game.pattern == []
     assert game.current_step == 0
     assert game.score == 0
@@ -46,8 +49,8 @@ def test_game_buttons_initialization():
 # Test writing and reading from file
 def test_save_and_read_high_score():
     game = Game()
-    game.save_scores(42)
-    assert game.get_high_score() == 42
+    game.save_scores(4298859)
+    assert game.get_high_score() == 4298859
 
 if __name__ == "__main__":
     pytest.main()
